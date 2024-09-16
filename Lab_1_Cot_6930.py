@@ -1,22 +1,16 @@
 # Author: Justin Rudisal
 # Self-prompting script for recursive prompt engineering. The average cost to fully run this once-through is around $0.15
 
-from openai import OpenAI
+import datetime
+import threading
 import time
 import sys
-import threading
+from openai import OpenAI
 
+client = OpenAI(api_key="YOUR_API_KEY_HERE")
 
-client = OpenAI(api_key="Insert your Open AI API key here")
-
-initial_prompt = (
-    "CyberWeb is an emerging concept focusing on enhancing personal online security using generative AI. Our class project "
-    "aims to develop a proof-of-concept that showcases how generative AI can be used within the software development lifecycle. "
-    "Given that this is a college project with a two-month timeline, we need to create a feasible prototype that emphasizes AI-driven "
-    "solutions. The main idea revolves around a browser-based tool or extension that utilizes generative AI to enhance user privacy and security "
-    "online. The tool should be simple, demonstrate clear use of generative AI, and fit within the scope of a class project. The goal is to create "
-    "a concept that is not only functional but also highlights the practical application of AI in real-world cybersecurity scenarios."
-)
+# Initial prompt placeholder that will be set based on user's choice
+initial_prompt = ""
 
 # Number of iterations to perform self-prompting
 ITERATIONS = 5
@@ -27,11 +21,14 @@ VARIATIONS = 3
 message_log = [
     {
         "role": "system",
-        "content": "You are an AI assistant helping to develop a class project concept within a two-month timeframe. "
-        "The project, called CyberWeb, should focus on using generative AI within the software development lifecycle, "
-        "particularly emphasizing privacy and security. The goal is to create a prototype or proof-of-concept that demonstrates "
-        "how generative AI can address real-world cybersecurity issues in a simple, impactful way. Keep suggestions achievable, "
-        "with an emphasis on leveraging AI's unique capabilities to create innovative solutions.",
+        "content": (
+            "You are an AI assistant helping to develop a class project concept within a two-month timeframe. "
+            "The project, called CyberWeb, should focus on using generative AI within the software development "
+            "lifecycle, particularly emphasizing privacy and security. The goal is to create a prototype or "
+            "proof-of-concept that demonstrates how generative AI can address real-world cybersecurity issues in a "
+            "simple, impactful way. Keep suggestions achievable, with an emphasis on leveraging AI's unique "
+            "capabilities to create innovative solutions."
+        ),
     }
 ]
 
@@ -81,9 +78,7 @@ def generate_variations(prompt):
     """Function to generate multiple variations for a given prompt."""
     global loading
     loading = True
-    animation_thread = threading.Thread(
-        target=loading_animation
-    )
+    animation_thread = threading.Thread(target=loading_animation)
     animation_thread.start()
 
     variations = []
@@ -94,9 +89,7 @@ def generate_variations(prompt):
             )
             answer = response.choices[0].message.content
             variations.append(answer)
-            time.sleep(
-                0.5
-            )
+            time.sleep(0.5)
     finally:
         loading = False
         animation_thread.join()
@@ -117,7 +110,11 @@ def self_prompt(prompt, depth):
     preferred_variation, feedback = get_human_feedback(variations)
 
     if preferred_variation:
-        follow_up_prompt = f"You liked the following idea: '{preferred_variation}'. Refine this concept further considering the feedback: {feedback}. Focus on making it achievable within two months and demonstrate how generative AI can be leveraged effectively."
+        follow_up_prompt = (
+            f"You liked the following idea: '{preferred_variation}'. Refine this concept further "
+            f"considering the feedback: {feedback}. Focus on making it achievable by a team of students within two "
+            f"months and demonstrate how generative AI can be leveraged effectively."
+        )
     elif feedback.strip():
         follow_up_prompt = feedback
     else:
@@ -130,17 +127,70 @@ def self_prompt(prompt, depth):
     self_prompt(follow_up_prompt, depth - 1)
 
 
-print("Starting self-prompting process: \n")
+def generate_ai_initial_prompt():
+    """Function to generate an AI-generated initial prompt."""
+    print("Generating an AI-generated initial prompt, please wait...")
+    system_prompt = (
+        "You are an AI assistant that helps to generate initial startup idea prompts for a self-prompting script. "
+        "Generate an initial prompt that aligns with the project goals, focusing on developing a class project concept "
+        "within a two-month timeframe, using generative AI within the software development lifecycle, particularly "
+        "emphasizing privacy and security."
+    )
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {
+            "role": "user",
+            "content": "Please generate an initial prompt for the self-prompting script.",
+        },
+    ]
+
+    response = client.chat.completions.create(
+        model="gpt-4o-2024-08-06", messages=messages
+    )
+    initial_prompt = response.choices[0].message.content
+    return initial_prompt
+
+
+# Main script starts here
+print("Please choose an initial prompt option:")
+print("1. Provide a self-written custom initial prompt")
+print("2. Use an AI-generated initial prompt")
+print("3. Use the hardcoded initial prompt")
+choice = input("Enter the number of your choice (1-3): ")
+
+if choice == "1":
+    initial_prompt = input("Please enter your custom initial prompt: ")
+elif choice == "2":
+    initial_prompt = generate_ai_initial_prompt()
+    print("\nGenerated Initial Prompt:\n")
+    print(initial_prompt)
+else:
+    # Use the hardcoded initial prompt
+    initial_prompt = (
+        "CyberWeb is an emerging concept focusing on enhancing personal online security using generative AI. Our "
+        "class project aims to develop a proof-of-concept that showcases how generative AI can be used within the "
+        "software development lifecycle. Given that this is a college project with a two-month timeline, we need to "
+        "create a feasible prototype that emphasizes AI-driven solutions. The main idea revolves around a "
+        "browser-based tool or extension that utilizes generative AI to enhance user privacy and security online. The "
+        "tool should be simple, demonstrate clear use of generative AI, and fit within the scope of a class project. "
+        "The goal is to create a concept that is not only functional but also highlights the practical application of "
+        "AI in real-world cybersecurity scenarios."
+    )
+
+print("\nStarting self-prompting process: \n")
 self_prompt(initial_prompt, ITERATIONS)
 
 summary_prompt = (
     "Based on the following generated ideas:\n\n"
     + "\n\n".join(generated_ideas)
-    + "\n\nConsolidate these ideas into a cohesive and actionable startup pitch that addresses the initial problem."
+    + "\n\nConsolidate these ideas into a cohesive and actionable startup pitch that addresses the initial problem. "
+    "The pitch should be concise, engaging, and clearly demonstrate the value proposition of the project. The pitch "
+    "should be similar to something like how you would present it to potential investors or stakeholders."
 )
 message_log.append({"role": "user", "content": summary_prompt})
 
-print("Generating the final cohesive idea, please wait...")
+print("Generating the finalized pitch idea, please wait...")
 
 final_response = client.chat.completions.create(
     model="gpt-4o-2024-08-06", messages=message_log
@@ -151,3 +201,17 @@ print("\n--- Finalized Idea ---\n")
 print(final_answer)
 
 print("Self-prompting process completed.")
+
+# Save the full conversation log to a file
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+conversation_log_filename = f"conversation_log_{timestamp}.txt"
+with open(conversation_log_filename, 'w', encoding='utf-8') as f:
+    for message in message_log:
+        role = message['role']
+        content = message['content']
+        f.write(f"{role.upper()}:\n{content}\n\n")
+
+# Save the final pitch to a file
+final_pitch_filename = f"final_pitch_{timestamp}.txt"
+with open(final_pitch_filename, 'w', encoding='utf-8') as f:
+    f.write(final_answer)
