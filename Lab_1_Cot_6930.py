@@ -7,7 +7,7 @@ import time
 import sys
 from openai import OpenAI
 
-client = OpenAI(api_key="YOUR_API_KEY_HERE")
+client = OpenAI(api_key="INSET_YOUR_API_KEY")
 
 # Initial prompt placeholder that will be set based on user's choice
 initial_prompt = ""
@@ -23,11 +23,13 @@ message_log = [
         "role": "system",
         "content": (
             "You are an AI assistant helping to develop a class project concept within a two-month timeframe. "
-            "The project, called CyberWeb, should focus on using generative AI within the software development "
-            "lifecycle, particularly emphasizing privacy and security. The goal is to create a prototype or "
-            "proof-of-concept that demonstrates how generative AI can address real-world cybersecurity issues in a "
-            "simple, impactful way. Keep suggestions achievable, with an emphasis on leveraging AI's unique "
-            "capabilities to create innovative solutions."
+            "The project, called CyberWeb, is supposed to be a tool that solves a current real-world problem that "
+            "isn't already covered by other tools. During the creation of this tool, the SDLC should focus "
+            "on using generative AI and replacing human labor. The project itself should pay a particular "
+            "focus on privacy and security. The goal is to create a prototype or proof-of-concept that demonstrates "
+            "how generative AI can address real-world cybersecurity issues in a simple, impactful way. Keep "
+            "suggestions achievable, with an emphasis on leveraging AI's unique capabilities to create innovative "
+            "solutions."
         ),
     }
 ]
@@ -133,8 +135,9 @@ def generate_ai_initial_prompt():
     system_prompt = (
         "You are an AI assistant that helps to generate initial startup idea prompts for a self-prompting script. "
         "Generate an initial prompt that aligns with the project goals, focusing on developing a class project concept "
-        "within a two-month timeframe, using generative AI within the software development lifecycle, particularly "
-        "emphasizing privacy and security."
+        "within a two-month timeframe, using generative AI within the software development lifecycle. The concept of "
+        "the project should be particularly emphasizing privacy and security. The project should be meeting a "
+        "marketable demand that is not already addressed by existing tools."
     )
 
     messages = [
