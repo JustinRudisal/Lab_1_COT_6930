@@ -23,11 +23,11 @@ The average cost to run the script fully once is approximately $0.15, based on t
 ## Installation
 1. Clone this repository:
    ```bash
-   git clone https://github.com/your-repository-url.git
+   git clone https://github.com/JustinRudisal/Lab_1_COT_6930.git
    ```
 2. Navigate to the project directory:
    ```bash
-   cd your-repository-name
+   cd Lab_1_COT_6930
    ```
 3. Install required dependencies:
    ```bash

@@ -7,7 +7,7 @@ import time
 import sys
 from openai import OpenAI
 
-client = OpenAI(api_key="INSET_YOUR_API_KEY")
+client = OpenAI(api_key="Insert your OpenAI API key here")
 
 # Initial prompt placeholder that will be set based on user's choice
 initial_prompt = ""
