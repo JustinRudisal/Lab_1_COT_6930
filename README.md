@@ -41,7 +41,7 @@ The average cost to run the script fully once is approximately $0.15, based on t
 ## Usage
 1. **Running the Script**: Execute the script using Python:
    ```bash
-   python self_prompting_script.py
+   python Lab_1_Cot_6930.py
    ```
 2. **Initial Prompt**: The script starts with a predefined initial prompt about the CyberWeb project.
 3. **Iterations and Feedback**:
